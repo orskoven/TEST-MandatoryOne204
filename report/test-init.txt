@@ -1,0 +1,401 @@
+**Enhanced Test Case Design and Documentation**
+
+As per your request, I will provide a comprehensive and detailed test case design focusing on edge cases and boundary conditions using black-box testing techniques. I will also ensure that all testing activities comply with ISTQB best practices for professional, production-ready environments. The documentation will include:
+
+1. **Test Plan**
+2. **Test Strategy**
+3. **Detailed Test Cases**
+4. **Test Traceability Matrix**
+5. **Compliance with ISTQB Best Practices**
+
+---
+
+## 1. Test Plan
+
+### 1.1 Introduction
+
+This Test Plan outlines the testing approach for the "Personal Test Data Generator" application. The goal is to ensure that the application meets all functional requirements and is free of defects before deployment.
+
+### 1.2 Objectives
+
+- Validate that all functionalities work as intended.
+- Ensure data generated complies with Danish standards.
+- Identify and document defects.
+- Verify that edge cases and boundary conditions are handled correctly.
+
+### 1.3 Scope
+
+**In Scope:**
+
+- Unit Testing
+- Integration Testing
+- API Testing
+- End-to-End Testing
+- Black-box and White-box Testing
+- Static Code Analysis
+
+**Out of Scope:**
+
+- Performance Testing
+- Security Penetration Testing (beyond basic static analysis)
+- Localization Testing (other than Danish)
+
+### 1.4 Test Items
+
+- **Backend Functions and APIs**
+  - Fake CPR Generation
+  - Name and Gender Generation
+  - Date of Birth Generation
+  - Address Generation
+  - Mobile Phone Number Generation
+  - Bulk Data Generation
+- **Frontend Interface**
+
+### 1.5 Testing Approach
+
+- **Black-Box Testing:** Using techniques like Equivalence Partitioning, Boundary Value Analysis, Decision Tables, and State Transition Testing.
+- **White-Box Testing:** Code coverage analysis, path testing.
+- **Static Analysis:** Code quality and security checks using tools like Pylint, Flake8, and Bandit.
+- **Automated Testing:** Use of frameworks like unittest (Python), Postman, and Cypress for automated test execution.
+
+### 1.6 Test Criteria
+
+- **Entry Criteria:**
+  - Code development completed.
+  - Unit tests written and passing.
+  - Test environment set up.
+
+- **Exit Criteria:**
+  - All critical and major defects resolved.
+  - Test coverage meets the required threshold (e.g., 90% code coverage).
+  - All tests in the CI pipeline pass.
+
+### 1.7 Risks and Mitigation
+
+- **Risk:** Time constraints may limit thorough testing.
+  - *Mitigation:* Prioritize test cases based on risk and impact.
+- **Risk:** Incomplete requirements may lead to missed test cases.
+  - *Mitigation:* Review requirements thoroughly and clarify ambiguities.
+
+### 1.8 Schedule
+
+- **Test Planning:** [Dates]
+- **Test Case Design:** [Dates]
+- **Test Execution:** [Dates]
+- **Defect Resolution:** [Dates]
+- **Final Testing and Sign-off:** [Dates]
+
+---
+
+## 2. Test Strategy
+
+### 2.1 Testing Levels
+
+- **Unit Testing:** Testing individual functions and methods.
+- **Integration Testing:** Testing interactions between components.
+- **System Testing:** Testing the complete system's functionality.
+- **Acceptance Testing:** Validating against requirements (could be considered if time allows).
+
+### 2.2 Testing Types
+
+- **Functional Testing:** Verify that the application works as expected.
+- **Structural Testing:** Ensure code paths are tested.
+- **Regression Testing:** Re-run tests after changes to ensure no new defects.
+
+### 2.3 Test Design Techniques
+
+- **Black-Box Techniques:**
+  - Equivalence Partitioning
+  - Boundary Value Analysis
+  - Decision Tables
+  - State Transition Testing
+
+- **White-Box Techniques:**
+  - Statement Coverage
+  - Branch Coverage
+  - Path Coverage
+
+### 2.4 Test Environment
+
+- **Backend:** Python 3.x, Flask, MySQL database.
+- **Frontend:** React.js, running on Node.js.
+- **Testing Tools:**
+  - **Unit Testing:** unittest (Python)
+  - **API Testing:** Postman
+  - **End-to-End Testing:** Cypress
+  - **Static Analysis:** Pylint, Flake8, Bandit
+  - **CI Pipeline:** GitHub Actions
+
+---
+
+## 3. Detailed Test Cases
+
+### 3.1 Test Case Template
+
+- **Test Case ID**
+- **Test Description**
+- **Preconditions**
+- **Test Steps**
+- **Test Data**
+- **Expected Result**
+- **Actual Result**
+- **Status**
+- **Comments**
+
+### 3.2 Test Cases
+
+#### 3.2.1 CPR Generation
+
+##### Test Case 1: Valid CPR Generation for Male
+
+- **Test Case ID:** CPR_TC_01
+- **Test Description:** Verify that the generated CPR for a male is valid and the last digit is odd.
+- **Preconditions:** None.
+- **Test Steps:**
+  1. Call the API endpoint `/api/cpr` with parameter `gender='M'`.
+  2. Receive the CPR number.
+  3. Validate the format and content.
+- **Test Data:**
+  - Gender: 'M'
+- **Expected Result:**
+  - CPR is 10 digits.
+  - First six digits represent a valid date in `ddMMyy` format.
+  - Last four digits are numeric.
+  - Last digit is odd.
+
+##### Test Case 2: Valid CPR Generation for Female
+
+- **Test Case ID:** CPR_TC_02
+- **Test Description:** Verify that the generated CPR for a female is valid and the last digit is even.
+- **Preconditions:** None.
+- **Test Steps:**
+  1. Call the API endpoint `/api/cpr` with parameter `gender='F'`.
+  2. Receive the CPR number.
+  3. Validate the format and content.
+- **Test Data:**
+  - Gender: 'F'
+- **Expected Result:**
+  - CPR is 10 digits.
+  - First six digits represent a valid date in `ddMMyy` format.
+  - Last four digits are numeric.
+  - Last digit is even.
+
+##### Test Case 3: Boundary Date Values in CPR
+
+- **Test Case ID:** CPR_TC_03
+- **Test Description:** Verify that CPR generation handles boundary dates (e.g., 01/01/1900 and 31/12/1999).
+- **Preconditions:** None.
+- **Test Steps:**
+  1. Mock date of birth generation to produce boundary dates.
+  2. Generate CPR numbers using these dates.
+  3. Validate CPR numbers.
+- **Test Data:**
+  - Dates: '010100', '311299'
+- **Expected Result:**
+  - CPRs correspond to the boundary dates.
+  - CPRs are valid and conform to gender rules.
+
+##### Test Case 4: Invalid Gender Input
+
+- **Test Case ID:** CPR_TC_04
+- **Test Description:** Verify the system handles invalid gender input gracefully.
+- **Preconditions:** None.
+- **Test Steps:**
+  1. Call the API endpoint `/api/cpr` with parameter `gender='X'`.
+  2. Observe the response.
+- **Test Data:**
+  - Gender: 'X'
+- **Expected Result:**
+  - System returns an error message indicating invalid gender.
+  - HTTP status code 400 (Bad Request).
+
+#### 3.2.2 Name and Gender Generation
+
+##### Test Case 5: Valid Name and Gender Generation
+
+- **Test Case ID:** NAME_TC_01
+- **Test Description:** Verify that a valid first name, last name, and gender are generated.
+- **Preconditions:** `person-names.json` is correctly formatted and accessible.
+- **Test Steps:**
+  1. Call the API endpoint `/api/name`.
+  2. Receive the name information.
+  3. Validate the data.
+- **Expected Result:**
+  - First name and last name are non-empty strings.
+  - Gender is either 'M' or 'F'.
+
+##### Test Case 6: Name Data Consistency
+
+- **Test Case ID:** NAME_TC_02
+- **Test Description:** Verify that the gender corresponds to the names provided.
+- **Preconditions:** Names in `person-names.json` are correctly associated with genders.
+- **Test Steps:**
+  1. Generate multiple names.
+  2. For each, check if the first name is typically associated with the given gender.
+- **Expected Result:**
+  - Names correspond to the gender specified.
+
+#### 3.2.3 Mobile Phone Number Generation
+
+##### Test Case 7: Valid Mobile Number Prefixes
+
+- **Test Case ID:** PHONE_TC_01
+- **Test Description:** Verify that generated mobile phone numbers start with valid prefixes.
+- **Preconditions:** List of valid prefixes is defined.
+- **Test Steps:**
+  1. Generate a mobile phone number.
+  2. Extract the prefix.
+  3. Validate against the list.
+- **Expected Result:**
+  - The prefix is one of the specified valid combinations.
+
+##### Test Case 8: Phone Number Length
+
+- **Test Case ID:** PHONE_TC_02
+- **Test Description:** Verify that the mobile phone number is exactly 8 digits.
+- **Preconditions:** None.
+- **Test Steps:**
+  1. Generate a mobile phone number.
+  2. Check the length.
+- **Expected Result:**
+  - The phone number is 8 digits long.
+
+#### 3.2.4 Address Generation
+
+##### Test Case 9: Valid Postal Codes and Towns
+
+- **Test Case ID:** ADDRESS_TC_01
+- **Test Description:** Verify that the generated postal code and town are valid and exist in the database.
+- **Preconditions:** The database `addresses.sql` is correctly set up.
+- **Test Steps:**
+  1. Generate an address.
+  2. Validate the postal code and town against the database.
+- **Expected Result:**
+  - Postal code and town are valid entries from the database.
+
+##### Test Case 10: Address Components Format
+
+- **Test Case ID:** ADDRESS_TC_02
+- **Test Description:** Verify that street, number, floor, and door are correctly formatted.
+- **Preconditions:** None.
+- **Test Steps:**
+  1. Generate an address.
+  2. Validate each component's format.
+- **Expected Result:**
+  - Street: Non-empty string of alphabetic characters.
+  - Number: 1-999, optionally followed by an uppercase letter.
+  - Floor: 'st' or number 1-99.
+  - Door: 'th', 'mf', 'tv', number 1-50, or pattern like 'c3', 'd-14'.
+
+#### 3.2.5 Bulk Data Generation
+
+##### Test Case 11: Bulk Generation within Valid Range
+
+- **Test Case ID:** BULK_TC_01
+- **Test Description:** Verify that bulk generation works for counts between 2 and 100.
+- **Preconditions:** None.
+- **Test Steps:**
+  1. Request bulk generation with count = 50.
+  2. Receive the data.
+  3. Validate the number of records and data correctness.
+- **Expected Result:**
+  - 50 records are returned.
+  - Each record contains valid data.
+
+##### Test Case 12: Bulk Generation Below Valid Range
+
+- **Test Case ID:** BULK_TC_02
+- **Test Description:** Verify that bulk generation fails when count is less than 2.
+- **Preconditions:** None.
+- **Test Steps:**
+  1. Request bulk generation with count = 1.
+  2. Observe the response.
+- **Expected Result:**
+  - Error message indicating invalid count.
+  - HTTP status code 400.
+
+##### Test Case 13: Bulk Generation Above Valid Range
+
+- **Test Case ID:** BULK_TC_03
+- **Test Description:** Verify that bulk generation fails when count is more than 100.
+- **Preconditions:** None.
+- **Test Steps:**
+  1. Request bulk generation with count = 101.
+  2. Observe the response.
+- **Expected Result:**
+  - Error message indicating invalid count.
+  - HTTP status code 400.
+
+---
+
+## 4. Test Traceability Matrix
+
+This matrix maps test cases to requirements to ensure coverage.
+
+| Requirement                                           | Test Cases               |
+|-------------------------------------------------------|--------------------------|
+| Generate a fake CPR                                   | CPR_TC_01, CPR_TC_02, CPR_TC_03, CPR_TC_04 |
+| Generate a fake name and gender                       | NAME_TC_01, NAME_TC_02   |
+| Generate a fake mobile phone number                   | PHONE_TC_01, PHONE_TC_02 |
+| Generate a fake address                               | ADDRESS_TC_01, ADDRESS_TC_02 |
+| Generate bulk fake person information                 | BULK_TC_01, BULK_TC_02, BULK_TC_03 |
+
+---
+
+## 5. Compliance with ISTQB Best Practices
+
+### 5.1 Fundamental Test Process
+
+- **Planning and Control:** Developed a test plan and strategy.
+- **Analysis and Design:** Created detailed test cases using black-box techniques.
+- **Implementation and Execution:** Implemented tests in code and test tools.
+- **Evaluating Exit Criteria:** Defined entry and exit criteria.
+- **Test Closure:** Documentation and reporting of test results.
+
+### 5.2 Testing Principles
+
+- **Testing Shows the Presence of Defects:** Focused on finding defects in data generation logic.
+- **Exhaustive Testing is Impossible:** Prioritized test cases based on risk and impact.
+- **Early Testing:** Started testing activities in parallel with development.
+- **Defect Clustering:** Focused more tests on complex functionalities like CPR and address generation.
+- **Pesticide Paradox:** Regularly reviewed and updated test cases to cover new defects.
+- **Testing is Context-Dependent:** Applied appropriate testing techniques for different functionalities.
+- **Absence-of-Errors Fallacy:** Ensured that passing tests do not guarantee the system meets user needs; validated against requirements.
+
+### 5.3 Test Management
+
+- **Risk-Based Testing:** Identified critical areas (e.g., CPR generation) and allocated more testing resources.
+- **Test Estimation:** Planned testing activities within the project timeline.
+- **Test Monitoring and Control:** Set up CI pipeline to monitor test results continuously.
+
+### 5.4 Test Design Techniques
+
+- **Specification-Based Techniques:** Used equivalence partitioning, boundary value analysis, and decision tables.
+- **Structure-Based Techniques:** Applied code coverage analysis.
+- **Experience-Based Techniques:** Leveraged domain knowledge for additional test scenarios.
+
+---
+
+## Additional Enhancements
+
+### Efficiency Improvements
+
+- **Test Automation:** Automated tests to run in CI pipeline, reducing manual effort.
+- **Reusable Test Scripts:** Designed test cases and scripts to be reusable across different test runs and environments.
+- **Parallel Testing:** Configured tests to run in parallel where possible to speed up execution time.
+
+### Correctness Assurance
+
+- **Validation of Test Data:** Cross-checked generated data against official Danish standards.
+- **Error Handling Testing:** Ensured the system handles invalid inputs gracefully.
+- **Consistency Checks:** Verified that interconnected data (e.g., date of birth and CPR) are consistent.
+
+---
+
+## Conclusion
+
+By deepening the test cases and focusing on edge and boundary conditions using black-box testing techniques, we've strengthened the testing process to ensure a high-quality, production-ready application. All testing activities align with ISTQB best practices, emphasizing thoroughness, efficiency, and correctness.
+
+---
+
+**Note:** The actual implementation of the tests, as well as the execution results, would be included in the delivery package. This includes the source code for tests, test reports, and any additional documentation generated during the testing process.

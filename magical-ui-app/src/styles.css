@@ -1,0 +1,77 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle at center, #ffffff, #e0e0e0);
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.magic-button {
+  background-color: #6200ea;
+  color: white;
+  padding: 15px 30px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.magic-button:hover {
+  background-color: #3700b3;
+  transform: scale(1.05);
+}
+
+.magic-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.magic-text {
+  font-size: 48px;
+  color: #424242;
+  margin-bottom: 20px;
+}
+
+@keyframes magicGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animated-background {
+  background: linear-gradient(270deg, #ff9a9e, #fad0c4, #fad0c4);
+  background-size: 600% 600%;
+  animation: magicGradient 16s ease infinite;
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-in forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
