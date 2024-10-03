@@ -1,21 +1,57 @@
-from flask import Flask, jsonify, request
-from flask_cors import CORS
 import random
 import datetime
 import json
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+from mysql.connector import Error, connect
+import os
 
-# Create a new Flask application instance
+from dotenv import load_dotenv
+load_dotenv()
+
+
 app = Flask(__name__)
-
-# Configure CORS to allow specific origin
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
-# Sample data for postal codes and towns
-postal_codes_and_towns = [
-    ('1000', 'Copenhagen'),
-    ('2000', 'Frederiksberg'),
-    # Add more sample postal codes and towns as needed
-]
+# Configure database credentials and connection details
+
+DB_USER = os.getenv("DB_USER")  
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = int(os.getenv("DB_PORT"))
+DB_NAME = os.getenv("DB_NAME")
+
+# Establish a connection to the MySQL database
+def create_connection():
+    try:
+        cnx = connect(
+            user=DB_USER,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            port=DB_PORT,
+            database=DB_NAME
+        )
+        return cnx
+    except Error as err:
+        print(f"Error connecting to database: {err}")
+        return None
+
+# Fetch a random postal code and town name from the database
+def fetch_random_postal_code_town():
+    conn = create_connection()
+    if conn is not None:
+        cursor = conn.cursor(dictionary=True)
+        query = "SELECT cPostalCode, cTownName FROM postal_code ORDER BY RAND() LIMIT 1"
+        cursor.execute(query)
+        row = cursor.fetchone()
+        conn.close()
+        return {
+            'postal_code': row['cPostalCode'],
+            'town_name': row['cTownName']
+        }
+    else:
+        print("Failed to fetch data from database.")
+        return None
 
 # Function Definitions
 
@@ -34,17 +70,17 @@ def generate_fake_cpr(gender=None, dob=None):
         last_digit = int(sequence_str[-1])
 
         if gender == 'M' and last_digit % 2 != 0:
-            break  # Male and last digit is odd
+            break # Male and last digit is odd
         elif gender == 'F' and last_digit % 2 == 0:
-            break  # Female and last digit is even
+            break # Female and last digit is even
         elif gender is None:
-            break  # No gender specified
+            break # No gender specified
 
     cpr = f'{date_part}{sequence_str}'
     return cpr, dob
 
+
 def generate_fake_name():
-    # If person-names.json exists, load from file; else use sample data
     try:
         with open('person-names.json', 'r', encoding='utf-8') as f:
             names_data_local = json.load(f)
@@ -53,8 +89,8 @@ def generate_fake_name():
         names_data_local = [
             {'first_name': 'John', 'last_name': 'Smith', 'gender': 'M'},
             {'first_name': 'Jane', 'last_name': 'Doe', 'gender': 'F'},
-            # Add more sample names as needed
         ]
+
     person = random.choice(names_data_local)
     return {
         'first_name': person['first_name'],
@@ -62,10 +98,12 @@ def generate_fake_name():
         'gender': person['gender']
     }
 
+
 def generate_random_dob():
     start_date = datetime.date(1900, 1, 1)
     end_date = datetime.date.today()
     return start_date + datetime.timedelta(days=random.randint(0, (end_date - start_date).days))
+
 
 def generate_full_identity_data():
     name_info = generate_fake_name()
@@ -78,6 +116,7 @@ def generate_full_identity_data():
         'date_of_birth': dob.strftime('%Y-%m-%d')
     }
 
+
 def generate_fake_address():
     street = ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', k=random.randint(5, 15)))
     number = f"{random.randint(1, 999)}{random.choice(['', chr(random.randint(65, 90))])}"
@@ -88,17 +127,21 @@ def generate_fake_address():
     ]
     door = random.choice(door_options)
 
-    # Select a random postal code and town from sample data
-    postal_code, town = random.choice(postal_codes_and_towns)
+    # Fetch a random postal code and town from the database
+    addr_data = fetch_random_postal_code_town()
+    if addr_data:
+        return {
+            'street': street,
+            'number': number,
+            'floor': floor,
+            'door': door,
+            'postal_code': addr_data['postal_code'],
+            'town_name': addr_data['town_name']
+        }
+    else:
+        print("Failed to fetch address data from database.")
+        return None
 
-    return {
-        'street': street,
-        'number': number,
-        'floor': floor,
-        'door': door,
-        'postal_code': postal_code,
-        'town': town
-    }
 
 def generate_fake_phone_number():
     valid_prefixes = ['2', '30', '31', '40', '41', '42', '50', '51', '52', '53', '60', '61', '71', '81', '91', '92', '93'] + \
